@@ -5,6 +5,7 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
+const hostname = '192.168.192.89'; // Update to your desired IP address
 const port = 3000;
 
 app.use(cors());
@@ -48,6 +49,6 @@ app.post('/proxy', async (req, res) => {
     }
 });
 
-app.listen(port, '0.0.0.0', () => {
-    console.log(`Server running at http://0.0.0.0:${port}/`);
+app.listen(port, hostname, () => {
+    console.log(`Server running at http://${hostname}:${port}/`);
 });
