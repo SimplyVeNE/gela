@@ -5,9 +5,9 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
-#const hostname = '192.168.192.89'; // Update to your desired IP address
 const port = 3000;
 
+// Middleware setup
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -19,6 +19,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'address.html'));
 });
 
+// Proxy route to handle requests and forward them
 app.post('/proxy', async (req, res) => {
     try {
         const response = await axios.post('https://maps.gov.ge/map/portal/search', new URLSearchParams(req.body), {
@@ -49,6 +50,7 @@ app.post('/proxy', async (req, res) => {
     }
 });
 
+// Start the server
 app.listen(port, '0.0.0.0', () => {
     console.log(`Server running at http://0.0.0.0:${port}/`);
 });
