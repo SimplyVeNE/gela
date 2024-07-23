@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>მისამართების ბაზა</title>
+    <style>
+        @import url("//cdn.web-fonts.ge/fonts/bpg-phone-sans-italic/css/bpg-phone-sans-italic.min.css");
+        @import url("//cdn.web-fonts.ge/fonts/bpg-quadrosquare-caps-2013/css/bpg-quadrosquare-caps-2013.min.css");
+        @import url("//cdn.web-fonts.ge/fonts/bpg-square/css/bpg-square.min.css");
+        body {
+            background-color: #dde3ec;
+            margin: 0;
+            padding: 0;
+        }
+        .search {
+            /* font-family:"BPG QuadroSquare Caps 2013", sans-serif; */
+            font-family: "BPG Square", sans-serif;
+            color: black; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #4587dd;
+            font-weight: 400;
+        }
+        .logo {
+            display: flex;
+        }
+
+        img {
+            width: 300px;
+        }
+
+        form {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: rgb(21, 115, 216) 0px 20px 30px -10px;
+            /* box-shadow: 0 0 10px rgba(204, 12, 12, 0.726); */
+        }
+        label {
+            font-size: 1.2em;
+        }
+        input[type="text"] {
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 1em;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: "BPG Phone Sans Italic", sans-serif;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 80%;
+            margin: 20px 0;
+            border-collapse: collapse;
+            background-color: transparent;
+            border-radius: 10px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #4587dd;
+            border-radius: 5px;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-size: 1.1em;
+        }
+       
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .copy-button {
+            padding: 5px 10px;
+            font-size: 0.9em;
+            color: white;
+            background-color: #5891db;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .copy-button:hover {
+            background-color:#0056b3;
+        }
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 2px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            font-size: 17px;
+        }
+        .toast.show {
+            visibility: visible;
+            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @-webkit-keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @-webkit-keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="silk.png" alt="">
+    </div>
+    <div class="search">
+        <form id="searchForm">
+            <label for="keywordInput">მისამართი</label>
+            <input type="text" id="keywordInput" name="keyword" required>
+            <button type="submit">მოძებნე</button>
+        </form>
+        
+        <table id="resultsTable">
+            <thead>
+                <tr>
+                    <th>ქუჩის დასახელება</th>
+                    <th>კოპირება</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Results will be inserted here -->
+            </tbody>
+        </table>
+        
+        <div id="toast" class="toast"></div>    
+    </div>
+
+    <script>
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        document.getElementById('searchForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const keywordValue = document.getElementById('keywordInput').value;
+
+    const url = "http://localhost:3000/proxy"; // Update with your server URL
+
+    const params = new URLSearchParams({
+        'keyword': keywordValue,
+        'keyword_description[coords][]': 41.63641433604376,
+        'keyword_description[coords][]': 41.616608117884894,
+        'keyword_description[zoom]': 13.677075922567166,
+        'keyword_description[bbox][]': 4629327.221501143,
+        'keyword_description[bbox][]': 5097267.262962651,
+        'keyword_description[bbox][]': 4640561.66319115,
+        'keyword_description[bbox][]': 5110174.919372448,
+        'keyword_description[screen_width]': 1920,
+        'keyword_description[screen_height]': 1080,
+        'keyword_description[projection]': 'EPSG%3A4326',
+        'keyword_description[orientation_angle]': 0,
+        'keyword_description[getinfo_type]': '',
+        'keyword_description[layers][]': 92,
+        'keyword_description[layers][]': 97,
+        'keyword_description[lang]': 'ka'
+    });
+
+    fetch(url, {
+        method: 'POST',
+        body: params
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status && data.result.length > 0) {
+                const resultsTableBody = document.querySelector('#resultsTable tbody');
+                resultsTableBody.innerHTML = ''; // Clear previous results
+
+                data.result.forEach(item => {
+                    const row = document.createElement('tr');
+
+                    const descNameCell = document.createElement('td');
+                    descNameCell.textContent = `${item.descript}, ${item.name}`;
+                    row.appendChild(descNameCell);
+
+                    const actionCell = document.createElement('td');
+                    const copyButton = document.createElement('button');
+                    copyButton.textContent = 'Copy to Clipboard';
+                    copyButton.className = 'copy-button';
+                    copyButton.addEventListener('click', () => {
+                        if (navigator.clipboard) {
+                            navigator.clipboard.writeText(`${item.descript}, ${item.name}`)
+                                .then(() => {
+                                    showToast('Copied to clipboard!');
+                                })
+                                .catch(err => {
+                                    console.error('Could not copy text: ', err);
+                                    fallbackCopyTextToClipboard(`${item.descript}, ${item.name}`);
+                                });
+                        } else {
+                            fallbackCopyTextToClipboard(`${item.descript}, ${item.name}`);
+                        }
+                    });
+                    actionCell.appendChild(copyButton);
+                    row.appendChild(actionCell);
+
+                    resultsTableBody.appendChild(row);
+                });
+            } else {
+                alert('No results found');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+});
+
+
+        function fallbackCopyTextToClipboard(text) {
+            var textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";  // Make it invisible but keep it on the page
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+          
+            try {
+                var successful = document.execCommand('copy');
+                var msg = successful ? 'successful' : 'unsuccessful';
+                console.log('Fallback: Copying text command was ' + msg);
+                showToast('Copied to clipboard');
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+                alert('Copying to clipboard failed. Please try again.');
+            }
+          
+            document.body.removeChild(textArea);
+        }
+    </script>
+</body>
+</html>
